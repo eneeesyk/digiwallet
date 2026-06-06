@@ -27,6 +27,14 @@ public class Account {
 
     }
 
+    public static Account reconstructFromEvents(long accountId, List<DomainEvent> events){
+        Account account = new Account(accountId);
+        for (DomainEvent event : events) {
+            account.apply(event);
+        }
+        return account;
+    }
+
     public void deposit(Money amount){
         if(amount.isNegative()){
             throw new IllegalArgumentException("Deposit amount cannot be negative");
@@ -48,8 +56,6 @@ public class Account {
         apply(event);
     }
 
-
-
     private void apply(DomainEvent event){
         if (event instanceof AccountOpened e){
             this.balance = e.getInitialBalance();
@@ -63,5 +69,12 @@ public class Account {
     public List<DomainEvent> getUncommittedEvents() {
         return uncommittedEvents;
     }
-    
+
+    public void clearUncommittedEvents() {
+        uncommittedEvents.clear();
+    }
+
+    public Money getBalance() {
+        return balance;
+    }
 }
