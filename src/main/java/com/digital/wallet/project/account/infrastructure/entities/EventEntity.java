@@ -9,6 +9,8 @@ import jakarta.persistence.Table;
 
 import java.time.Instant;
 
+import com.digital.wallet.project.account.objects.AccountId;
+
 @Entity
 @Table(name = "events")
 public class EventEntity {
@@ -36,8 +38,8 @@ public class EventEntity {
         return id;
     }
 
-    public Long getAccountId() {
-        return accountId;
+    public AccountId getAccountId() {
+        return new AccountId(accountId);
     }
 
     public String getEventType() {

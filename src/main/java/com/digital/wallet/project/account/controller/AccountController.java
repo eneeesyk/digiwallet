@@ -5,7 +5,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 
 import com.digital.wallet.project.account.domain.Money;
 import com.digital.wallet.project.account.application.services.AccountService;
-import com.digital.wallet.project.account.domain.Account;
+import com.digital.wallet.project.account.objects.AccountId;
 
 import org.springframework.http.ResponseEntity;
 
@@ -28,25 +28,24 @@ public class AccountController {
     
     @PostMapping("/{accountId}/open")
     public ResponseEntity<Void> openAccount(@PathVariable Long accountId, @RequestParam BigDecimal initialBalance,@RequestParam String currency){
-        accountService.openAccount(accountId, new Money(initialBalance, currency));
+        accountService.openAccount(new AccountId(accountId), new Money(initialBalance, currency));
         return ResponseEntity.ok().build();
     }
 
     @PostMapping("/{accountId}/deposit")
     public ResponseEntity<Void> deposit(@PathVariable Long accountId, @RequestParam BigDecimal amount, @RequestParam String currency){
-        accountService.deposit(accountId, new Money(amount, currency));
+        accountService.deposit(new AccountId(accountId), new Money(amount, currency));
         return ResponseEntity.ok().build();
     }
 
     @PostMapping("/{accountId}/withdraw")
     public ResponseEntity<Void> withdraw(@PathVariable Long accountId, @RequestParam BigDecimal amount, @RequestParam String currency){
-        accountService.withdraw(accountId, new Money(amount, currency));
+        accountService.withdraw(new AccountId(accountId), new Money(amount, currency));
         return ResponseEntity.ok().build();
     }
 
     @GetMapping("/{accountId}/balance")
     public ResponseEntity<Money> getBalance(@PathVariable Long accountId){
-        Account account = accountService.replayEvents(accountId);
-        return ResponseEntity.ok(account.getBalance());
+        return ResponseEntity.ok(accountService.getBalance(new AccountId(accountId)));
     }
 }

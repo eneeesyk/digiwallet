@@ -7,18 +7,19 @@ import com.digital.wallet.project.account.domain.events.AccountOpened;
 import com.digital.wallet.project.account.domain.events.DomainEvent;
 import com.digital.wallet.project.account.domain.events.MoneyDeposited;
 import com.digital.wallet.project.account.domain.events.MoneyWithdrawn;
+import com.digital.wallet.project.account.objects.AccountId;
 
 public class Account {
-    private final long accountId;
+    private final AccountId accountId;
     private Money balance;
 
     private List<DomainEvent> uncommittedEvents = new ArrayList<>();
 
-    private Account(long accountId){
+    private Account(AccountId accountId){
         this.accountId = accountId;
     }
 
-    public static Account openAccount(long accountId, Money initialBalance){
+    public static Account openAccount(AccountId accountId, Money initialBalance){
         Account account = new Account(accountId);
         AccountOpened event = new AccountOpened(accountId, initialBalance);
         account.uncommittedEvents.add(event);
@@ -27,7 +28,7 @@ public class Account {
 
     }
 
-    public static Account reconstructFromEvents(long accountId, List<DomainEvent> events){
+    public static Account reconstructFromEvents(AccountId accountId, List<DomainEvent> events){
         Account account = new Account(accountId);
         for (DomainEvent event : events) {
             account.apply(event);
@@ -76,5 +77,9 @@ public class Account {
 
     public Money getBalance() {
         return balance;
+    }
+
+    public AccountId getAccountId() {
+        return accountId;
     }
 }

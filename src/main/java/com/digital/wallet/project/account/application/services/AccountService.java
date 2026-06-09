@@ -7,38 +7,50 @@ import org.springframework.stereotype.Service;
 
 import com.digital.wallet.project.account.domain.Account;
 import com.digital.wallet.project.account.domain.events.DomainEvent;
+import com.digital.wallet.project.account.infrastructure.repositories.AccountBalanceRepository;
 import com.digital.wallet.project.account.infrastructure.repositories.EventRepository;
 import com.digital.wallet.project.account.infrastructure.serializers.EventSerializer;
+import com.digital.wallet.project.account.infrastructure.entities.AccountBalanceEntity;
 import com.digital.wallet.project.account.infrastructure.entities.EventEntity;
 import com.digital.wallet.project.account.domain.Money;
+import com.digital.wallet.project.account.objects.AccountId;
 
 @Service
 public class AccountService {
 
     private EventRepository eventRepository;
     private EventSerializer eventSerializer;
+    private AccountBalanceRepository accountBalanceRepository;
 
-    public AccountService(EventRepository eventRepository, EventSerializer eventSerializer) {
+    public AccountService(EventRepository eventRepository, EventSerializer eventSerializer, AccountBalanceRepository accountBalanceRepository) {
         this.eventRepository = eventRepository;
         this.eventSerializer = eventSerializer;
+        this.accountBalanceRepository = accountBalanceRepository;
     }
 
     public void registerEvents(Account account){
         List<DomainEvent> events = account.getUncommittedEvents();
         for (DomainEvent event: events){
             EventEntity eventEntity = new EventEntity();
-            eventEntity.setAccountId(event.getAccountId());
+            eventEntity.setAccountId(event.getAccountId().getValue());
             eventEntity.setEventType(event.getClass().getSimpleName());
             eventEntity.setEventData(eventSerializer.serialize(event));
-            eventEntity.setOccurredAt(event.getOccuredAt());
+            eventEntity.setOccurredAt(event.getOccurredAt());
             eventRepository.save(eventEntity);
+
+            accountBalanceRepository.save(new AccountBalanceEntity(
+                account.getAccountId().getValue(),
+                account.getBalance().getAmount(),
+                account.getBalance().getCurrency(),
+                event.getOccurredAt()
+            ));
         }
         account.clearUncommittedEvents();
     }
     
 
-    public Account replayEvents(Long accountId){
-        List<EventEntity> events = eventRepository.findByAccountIdOrderByOccurredAtAsc(accountId);
+    public Account loadAccount(AccountId accountId){
+        List<EventEntity> events = eventRepository.findByAccountIdOrderByOccurredAtAsc(accountId.getValue());
         List<DomainEvent> domainEvents = new ArrayList<>();
         for (EventEntity event: events) {
             domainEvents.add(eventSerializer.deserialize(event.getEventData(), event.getEventType()));
@@ -47,20 +59,28 @@ public class AccountService {
         return Account.reconstructFromEvents(accountId, domainEvents);
     }
 
-    public void openAccount(Long accountId, Money initialBalance){
+    public void openAccount(AccountId accountId, Money initialBalance){
         Account account = Account.openAccount(accountId, initialBalance);
         registerEvents(account);
     }
 
-    public void deposit(Long accountId, Money amount){
-        Account account = replayEvents(accountId);
+    public void deposit(AccountId accountId, Money amount){
+        Account account = loadAccount(accountId);
         account.deposit(amount);
         registerEvents(account);
     }
 
-    public void withdraw(Long accountId, Money amount){
-        Account account = replayEvents(accountId);
+    public void withdraw(AccountId accountId, Money amount){
+        Account account = loadAccount(accountId);
         account.withdraw(amount);
         registerEvents(account);
+    }
+
+    public Money getBalance(AccountId accountId){
+        AccountBalanceEntity accountBalance = accountBalanceRepository.findByAccountId(accountId.getValue());
+        if (accountBalance == null) {
+            throw new IllegalArgumentException("Account not found");
+        }
+        return new Money(accountBalance.getBalance(), accountBalance.getCurrency()); 
     }
 }

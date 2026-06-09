@@ -2,14 +2,11 @@ package com.digital.wallet.project.account.domain;
 
 import java.math.BigDecimal;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-
 public class Money {
     private final BigDecimal amount;
     private final String currency;
 
-    public Money(@JsonProperty("amount") BigDecimal amount, 
-             @JsonProperty("currency") String currency) {
+    public Money(BigDecimal amount, String currency) {
         if (amount == null || amount.compareTo(BigDecimal.ZERO) < 0) {
             throw new IllegalArgumentException("Amount must be non-negative");
         }

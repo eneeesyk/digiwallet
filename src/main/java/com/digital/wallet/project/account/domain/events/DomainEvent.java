@@ -2,26 +2,28 @@ package com.digital.wallet.project.account.domain.events;
 
 import java.time.Instant;
 
+import com.digital.wallet.project.account.objects.AccountId;
+
 
 public abstract class DomainEvent {
-    private final long accountId;
+    private final AccountId accountId;
     private final String eventId;
-    private final Instant occuredAt;
+    private final Instant occurredAt;
 
-    public DomainEvent(long accountId, String eventId) {
+    public DomainEvent(AccountId accountId, String eventId) {
         this.accountId = accountId;
         this.eventId = eventId;
-        this.occuredAt = Instant.now();
+        this.occurredAt = Instant.now();
     }
 
     public String getEventId() {
         return eventId;
     }
 
-    public Instant getOccuredAt() {
-        return occuredAt;
+    public Instant getOccurredAt() {
+        return occurredAt;
     }
-    public long getAccountId() {
+    public AccountId getAccountId() {
         return accountId;
     }
 }
