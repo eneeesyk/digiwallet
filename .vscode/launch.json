@@ -1,0 +1,26 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "type": "java",
+      "name": "project (wallet)",
+      "request": "launch",
+      "mainClass": "com.digital.wallet.project.ProjectApplication",
+      "projectName": "project"
+    },
+    {
+      "type": "java",
+      "name": "notificationservice",
+      "request": "launch",
+      "mainClass": "com.digiwallet.service.notificationservice.NotificationserviceApplication",
+      "projectName": "notificationservice"
+    }
+  ],
+  "compounds": [
+    {
+      "name": "All services",
+      "configurations": ["project (wallet)", "notificationservice"],
+      "stopAll": true
+    }
+  ]
+}
