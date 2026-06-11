@@ -1,7 +1,7 @@
 package com.digital.wallet.project.account.infrastructure.serializers;
 
 import com.digital.wallet.project.account.domain.events.DomainEvent;
-import com.digital.wallet.project.constants.DWConstants;
+import com.digital.wallet.project.constants.EventType;
 
 import org.springframework.stereotype.Component;
 
@@ -25,13 +25,13 @@ public class EventSerializer {
         }
     }
 
-    public DomainEvent deserialize(String eventData, String eventType){
+    public DomainEvent deserialize(String eventData, EventType eventType){
         try {
-            if (DWConstants.ACCOUNT_OPENED.equals(eventType)) {
+            if (EventType.ACCOUNT_OPENED.equals(eventType)) {
                 return gson.fromJson(eventData, AccountOpened.class);
-            } else if (DWConstants.MONEY_DEPOSITED.equals(eventType)) {
+            } else if (EventType.MONEY_DEPOSITED.equals(eventType)) {
                 return gson.fromJson(eventData, MoneyDeposited.class);
-            } else if (DWConstants.MONEY_WITHDRAWN.equals(eventType)) {
+            } else if (EventType.MONEY_WITHDRAWN.equals(eventType)) {
                 return gson.fromJson(eventData, MoneyWithdrawn.class);
             }
         } catch (Exception e) {

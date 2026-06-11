@@ -2,6 +2,7 @@ package com.digital.wallet.project.account.domain.events;
 
 import com.digital.wallet.project.account.domain.Money;
 import com.digital.wallet.project.account.objects.AccountId;
+import com.digital.wallet.project.constants.EventType;
 
 import java.util.UUID;
 
@@ -17,4 +18,7 @@ public class MoneyWithdrawn extends DomainEvent{
         return amount;
     }
     
+    public EventType getType(){
+        return EventType.MONEY_WITHDRAWN;
+    }
 }

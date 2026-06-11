@@ -23,7 +23,7 @@ public class EventPublisher {
 
     public void publishMessage(String exchange, DomainEvent message, String routingKey){
         String messageJson = eventSerializer.serialize(message);
-        EventWrapper eventWrapper = new EventWrapper(message.getClass().getSimpleName(), messageJson);
+        EventWrapper eventWrapper = new EventWrapper(message.getType(), messageJson);
         rabbitTemplate.convertAndSend(exchange, routingKey, gson.toJson(eventWrapper));
         System.out.println("Message published to exchange: " + messageJson);
     }

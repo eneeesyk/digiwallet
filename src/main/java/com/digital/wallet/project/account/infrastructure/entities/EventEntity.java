@@ -10,6 +10,7 @@ import jakarta.persistence.Table;
 import java.time.Instant;
 
 import com.digital.wallet.project.account.objects.AccountId;
+import com.digital.wallet.project.constants.EventType;
 
 @Entity
 @Table(name = "events")
@@ -23,7 +24,7 @@ public class EventEntity {
     private Long accountId;
 
     @Column(name = "event_type", nullable = false)
-    private String eventType;
+    private EventType eventType;
 
     @Column(name = "event_data", nullable = false)
     private String eventData;
@@ -42,7 +43,7 @@ public class EventEntity {
         return new AccountId(accountId);
     }
 
-    public String getEventType() {
+    public EventType getEventType() {
         return eventType;
     }
 
@@ -58,7 +59,7 @@ public class EventEntity {
         this.accountId = accountId;
     }
 
-    public void setEventType(String eventType) {
+    public void setEventType(EventType eventType) {
         this.eventType = eventType;
     }
 

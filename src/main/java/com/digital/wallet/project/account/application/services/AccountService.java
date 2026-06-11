@@ -37,7 +37,7 @@ public class AccountService {
         for (DomainEvent event: events){
             EventEntity eventEntity = new EventEntity();
             eventEntity.setAccountId(event.getAccountId().getValue());
-            eventEntity.setEventType(event.getClass().getSimpleName());
+            eventEntity.setEventType(event.getType());
             eventEntity.setEventData(eventSerializer.serialize(event));
             eventEntity.setOccurredAt(event.getOccurredAt());
             eventRepository.save(eventEntity);

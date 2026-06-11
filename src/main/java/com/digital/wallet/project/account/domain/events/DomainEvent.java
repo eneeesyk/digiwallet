@@ -3,6 +3,7 @@ package com.digital.wallet.project.account.domain.events;
 import java.time.Instant;
 
 import com.digital.wallet.project.account.objects.AccountId;
+import com.digital.wallet.project.constants.EventType;
 
 
 public abstract class DomainEvent {
@@ -26,4 +27,6 @@ public abstract class DomainEvent {
     public AccountId getAccountId() {
         return accountId;
     }
+
+    public abstract EventType getType();
 }
