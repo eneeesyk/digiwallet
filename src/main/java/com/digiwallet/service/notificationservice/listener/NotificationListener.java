@@ -2,6 +2,8 @@ package com.digiwallet.service.notificationservice.listener;
 
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.stereotype.Component;
+
+import com.digiwallet.service.constants.EventType;
 import com.digiwallet.service.notificationservice.config.RabbitMqConfig;
 import com.digiwallet.service.wrappers.EventWrapper;
 import com.google.gson.Gson;
@@ -16,9 +18,9 @@ public class NotificationListener {
         System.out.println("Received message: " + message);
         EventWrapper eventWrapper = gson.fromJson(message, EventWrapper.class);
 
-        if ("MoneyWithdrawn".equals(eventWrapper.getEventType())) {
+        if (EventType.MONEY_WITHDRAWN.equals(eventWrapper.getEventType())) {
             System.out.println("Money withdrawn");
-        }else if ("MoneyDeposited".equals(eventWrapper.getEventType())) {
+        }else if (EventType.MONEY_DEPOSITED.equals(eventWrapper.getEventType())) {
             System.out.println("MoneyDeposited");
         }
     }

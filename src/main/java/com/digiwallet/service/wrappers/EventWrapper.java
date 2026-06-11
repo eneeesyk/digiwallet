@@ -1,20 +1,22 @@
 package com.digiwallet.service.wrappers;
 
+import com.digiwallet.service.constants.EventType;
+
 public class EventWrapper {
 
-    private String eventType;
+    private EventType eventType;
     private String payload;
 
-    public EventWrapper(String eventType, String payload){
+    public EventWrapper(EventType eventType, String payload){
         this.eventType = eventType;
         this.payload = payload;
     }
 
-    public String getEventType() {
+    public EventType getEventType() {
         return eventType;
     }
 
-    public void setEventType(String eventType) {
+    public void setEventType(EventType eventType) {
         this.eventType = eventType;
     }
 
