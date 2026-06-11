@@ -14,6 +14,8 @@ import com.digital.wallet.project.account.infrastructure.entities.AccountBalance
 import com.digital.wallet.project.account.infrastructure.entities.EventEntity;
 import com.digital.wallet.project.account.domain.Money;
 import com.digital.wallet.project.account.objects.AccountId;
+import com.digital.wallet.project.config.RabbitMqFanoutExchangeConfig;
+import com.digital.wallet.project.account.infrastructure.messaging.EventPublisher;
 
 @Service
 public class AccountService {
@@ -21,11 +23,13 @@ public class AccountService {
     private EventRepository eventRepository;
     private EventSerializer eventSerializer;
     private AccountBalanceRepository accountBalanceRepository;
+    private EventPublisher eventPublisher;
 
-    public AccountService(EventRepository eventRepository, EventSerializer eventSerializer, AccountBalanceRepository accountBalanceRepository) {
+    public AccountService(EventRepository eventRepository, EventSerializer eventSerializer, AccountBalanceRepository accountBalanceRepository, EventPublisher eventPublisher) {
         this.eventRepository = eventRepository;
         this.eventSerializer = eventSerializer;
         this.accountBalanceRepository = accountBalanceRepository;
+        this.eventPublisher = eventPublisher;
     }
 
     public void registerEvents(Account account){
@@ -44,6 +48,8 @@ public class AccountService {
                 account.getBalance().getCurrency(),
                 event.getOccurredAt()
             ));
+
+            eventPublisher.publishMessage(RabbitMqFanoutExchangeConfig.FANOUT_EXCHANGE, event, "");
         }
         account.clearUncommittedEvents();
     }

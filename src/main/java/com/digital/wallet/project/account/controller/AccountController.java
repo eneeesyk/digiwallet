@@ -27,25 +27,25 @@ public class AccountController {
     }
     
     @PostMapping("/{accountId}/open")
-    public ResponseEntity<Void> openAccount(@PathVariable Long accountId, @RequestParam BigDecimal initialBalance,@RequestParam String currency){
+    public ResponseEntity<Void> openAccount(@PathVariable("accountId") Long accountId, @RequestParam("initialBalance") BigDecimal initialBalance, @RequestParam("currency") String currency){
         accountService.openAccount(new AccountId(accountId), new Money(initialBalance, currency));
         return ResponseEntity.ok().build();
     }
 
     @PostMapping("/{accountId}/deposit")
-    public ResponseEntity<Void> deposit(@PathVariable Long accountId, @RequestParam BigDecimal amount, @RequestParam String currency){
+    public ResponseEntity<Void> deposit(@PathVariable("accountId") Long accountId, @RequestParam("amount") BigDecimal amount, @RequestParam("currency") String currency){
         accountService.deposit(new AccountId(accountId), new Money(amount, currency));
         return ResponseEntity.ok().build();
     }
 
     @PostMapping("/{accountId}/withdraw")
-    public ResponseEntity<Void> withdraw(@PathVariable Long accountId, @RequestParam BigDecimal amount, @RequestParam String currency){
+    public ResponseEntity<Void> withdraw(@PathVariable("accountId") Long accountId, @RequestParam("amount") BigDecimal amount, @RequestParam("currency") String currency){
         accountService.withdraw(new AccountId(accountId), new Money(amount, currency));
         return ResponseEntity.ok().build();
     }
 
     @GetMapping("/{accountId}/balance")
-    public ResponseEntity<Money> getBalance(@PathVariable Long accountId){
+    public ResponseEntity<Money> getBalance(@PathVariable("accountId") Long accountId){
         return ResponseEntity.ok(accountService.getBalance(new AccountId(accountId)));
     }
 }
