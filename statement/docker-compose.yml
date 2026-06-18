@@ -2,8 +2,8 @@ services:
   rabbitmq:
     image: rabbitmq:3-management
     ports:
-      - "5673:5673"    # uygulama bağlantısı
-      - "15672:15672"  # yönetim arayüzü
+      - "5673:5672" 
+      - "15672:15672"
     environment:
       RABBITMQ_DEFAULT_USER: guest
       RABBITMQ_DEFAULT_PASS: guest
@@ -14,4 +14,4 @@ services:
       POSTGRES_USER: statement_user
       POSTGRES_PASSWORD: secret
     ports:
-      - "5433:5433"
+      - "5433:5432"

@@ -10,6 +10,13 @@
     },
     {
       "type": "java",
+      "name": "statement",
+      "request": "launch",
+      "mainClass": "com.digiwallet.service.statement.StatementApplication",
+      "projectName": "statement"
+    },
+    {
+      "type": "java",
       "name": "notificationservice",
       "request": "launch",
       "mainClass": "com.digiwallet.service.notificationservice.NotificationserviceApplication",
@@ -19,7 +26,8 @@
   "compounds": [
     {
       "name": "All services",
-      "configurations": ["project (wallet)", "notificationservice"],
+      "configurations": ["project (wallet)", "statement", "notificationservice"],
+      "preLaunchTask": "start-infra",
       "stopAll": true
     }
   ]
