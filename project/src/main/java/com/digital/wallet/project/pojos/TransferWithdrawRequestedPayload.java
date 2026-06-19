@@ -1,7 +1,8 @@
-package com.digiwallet.service.transfer.pojos;
+package com.digital.wallet.project.pojos;
 
 import java.math.BigDecimal;
 import java.util.UUID;
+
 
 public class TransferWithdrawRequestedPayload {
     

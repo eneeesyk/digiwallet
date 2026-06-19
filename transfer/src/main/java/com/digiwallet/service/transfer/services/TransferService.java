@@ -3,8 +3,6 @@ package com.digiwallet.service.transfer.services;
 import java.math.BigDecimal;
 import java.util.UUID;
 
-import javax.management.RuntimeErrorException;
-
 import org.springframework.stereotype.Service;
 
 import com.digiwallet.service.transfer.StatusEnum;
@@ -50,6 +48,7 @@ public class TransferService {
         transferWithdrawRequestedPayload.setAmount(amount);
         transferWithdrawRequestedPayload.setCurrency(currency);
         transferWithdrawRequestedPayload.setFromAccountId(fromAccountId);
+        transferWithdrawRequestedPayload.setToAccountId(toAccountId);
         transferWithdrawRequestedPayload.setTransferId(transferId);
 
         EventWrapper eventWrapper = new EventWrapper(EventType.TRANSFER_WITHDRAW_REQUESTED, gson.toJson(transferWithdrawRequestedPayload));
