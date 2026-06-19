@@ -32,3 +32,14 @@ services:
       POSTGRES_PASSWORD: secret
     ports:
       - "5433:5432"
+
+  postgres-transfer:
+    image: postgres:16
+    container_name: digiwallet-postgres-transfer
+    environment:
+      POSTGRES_DB: transfers
+      POSTGRES_USER: transfer_user
+      POSTGRES_PASSWORD: secret
+    ports:
+      - "5434:5432"
+      

@@ -2,7 +2,8 @@
 	"folders": [
 		{ "path": "notificationservice" },
 		{ "path": "project" },
-		{ "path": "statement" }
+		{ "path": "statement" },
+		{ "path": "transfer" }
 	],
 	"settings": {
 		"java.configuration.updateBuildConfiguration": "automatic"

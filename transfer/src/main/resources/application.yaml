@@ -1,3 +1,18 @@
+server:
+  port: 8084
 spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5434/transfers
+    username: transfer_user
+    password: secret
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    show-sql: true
   application:
     name: transfer
+  rabbitmq:
+    host: localhost
+    port: 5672
+    username: guest
+    password: guest
