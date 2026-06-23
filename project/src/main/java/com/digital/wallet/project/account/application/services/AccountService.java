@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 
 import com.digital.wallet.project.account.domain.Account;
 import com.digital.wallet.project.account.domain.events.DomainEvent;
+import com.digital.wallet.project.account.domain.exceptions.AccountNotFoundException;
 import com.digital.wallet.project.account.infrastructure.repositories.AccountBalanceRepository;
 import com.digital.wallet.project.account.infrastructure.repositories.EventRepository;
 import com.digital.wallet.project.account.infrastructure.serializers.EventSerializer;
@@ -57,6 +58,9 @@ public class AccountService {
 
     public Account loadAccount(AccountId accountId){
         List<EventEntity> events = eventRepository.findByAccountIdOrderByOccurredAtAsc(accountId.getValue());
+        if (events.isEmpty()) {
+            throw new AccountNotFoundException("Account not found: " + accountId.getValue());
+        }
         List<DomainEvent> domainEvents = new ArrayList<>();
         for (EventEntity event: events) {
             domainEvents.add(eventSerializer.deserialize(event.getEventData(), event.getEventType()));

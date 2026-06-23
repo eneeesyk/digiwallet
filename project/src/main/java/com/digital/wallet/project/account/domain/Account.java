@@ -7,6 +7,7 @@ import com.digital.wallet.project.account.domain.events.AccountOpened;
 import com.digital.wallet.project.account.domain.events.DomainEvent;
 import com.digital.wallet.project.account.domain.events.MoneyDeposited;
 import com.digital.wallet.project.account.domain.events.MoneyWithdrawn;
+import com.digital.wallet.project.account.domain.exceptions.InsufficientFundsException;
 import com.digital.wallet.project.account.objects.AccountId;
 
 public class Account {
@@ -50,7 +51,7 @@ public class Account {
             throw new IllegalArgumentException("Withdrawal amount cannot be negative");
         }
         if(balance.getAmount().compareTo(amount.getAmount()) < 0){
-            throw new IllegalArgumentException("Can not withdraw that amount money because of balance");
+            throw new InsufficientFundsException("Insufficient funds: balance is " + balance.getAmount() + " but tried to withdraw " + amount.getAmount());
         }
         MoneyWithdrawn event = new MoneyWithdrawn(accountId, amount);
         uncommittedEvents.add(event);

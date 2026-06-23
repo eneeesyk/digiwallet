@@ -5,10 +5,14 @@ import org.springframework.web.bind.annotation.PathVariable;
 
 import com.digital.wallet.project.account.domain.Money;
 import com.digital.wallet.project.account.application.services.AccountService;
+import com.digital.wallet.project.account.domain.exceptions.AccountNotFoundException;
+import com.digital.wallet.project.account.domain.exceptions.InsufficientFundsException;
 import com.digital.wallet.project.account.objects.AccountId;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -47,5 +51,15 @@ public class AccountController {
     @GetMapping("/{accountId}/balance")
     public ResponseEntity<Money> getBalance(@PathVariable("accountId") Long accountId){
         return ResponseEntity.ok(accountService.getBalance(new AccountId(accountId)));
+    }
+
+    @ExceptionHandler(InsufficientFundsException.class)
+    public ResponseEntity<String> handleInsufficientFunds(InsufficientFundsException e) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+    }
+
+    @ExceptionHandler(AccountNotFoundException.class)
+    public ResponseEntity<String> handleAccountNotFound(AccountNotFoundException e) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
     }
 }
