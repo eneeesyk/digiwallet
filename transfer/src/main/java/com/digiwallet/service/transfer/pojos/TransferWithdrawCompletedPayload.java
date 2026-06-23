@@ -7,17 +7,28 @@ public class TransferWithdrawCompletedPayload {
 
     private UUID transferId;
 
+    private Long fromAccountId;
+
     private Long toAccountId;
 
     private BigDecimal amount;
 
     private String currency;
 
-    public TransferWithdrawCompletedPayload(UUID transferId, Long toAccountId, BigDecimal amount, String currency) {
+    public TransferWithdrawCompletedPayload(UUID transferId, Long fromAccountId, Long toAccountId, BigDecimal amount, String currency) {
         this.transferId = transferId;
+        this.fromAccountId = fromAccountId;
         this.toAccountId = toAccountId;
         this.amount = amount;
         this.currency = currency;
+    }
+
+    public Long getFromAccountId() {
+        return fromAccountId;
+    }
+
+    public void setFromAccountId(Long fromAccountId) {
+        this.fromAccountId = fromAccountId;
     }
 
     public UUID getTransferId() {

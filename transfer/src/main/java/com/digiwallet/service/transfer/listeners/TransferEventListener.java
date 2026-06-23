@@ -7,7 +7,11 @@ import com.digiwallet.service.transfer.StatusEnum;
 import com.digiwallet.service.transfer.config.RabbitMqConfig;
 import com.digiwallet.service.transfer.constants.EventType;
 import com.digiwallet.service.transfer.entities.SagaEntity;
+import com.digiwallet.service.transfer.pojos.TransferCompensateCompleted;
+import com.digiwallet.service.transfer.pojos.TransferCompensateFailed;
+import com.digiwallet.service.transfer.pojos.TransferCompensateRequestedPayload;
 import com.digiwallet.service.transfer.pojos.TransferDepositCompletedPayload;
+import com.digiwallet.service.transfer.pojos.TransferDepositFailedPayload;
 import com.digiwallet.service.transfer.pojos.TransferDepositRequestedPayload;
 import com.digiwallet.service.transfer.pojos.TransferWithdrawCompletedPayload;
 import com.digiwallet.service.transfer.pojos.TransferWithdrawFailedPayload;
@@ -46,6 +50,7 @@ public class TransferEventListener {
 
             TransferDepositRequestedPayload transferDepositRequestedPayload =
                 new TransferDepositRequestedPayload(transferWithdrawCompletedPayload.getTransferId(),
+                transferWithdrawCompletedPayload.getFromAccountId(),
                 transferWithdrawCompletedPayload.getToAccountId(),
                 transferWithdrawCompletedPayload.getAmount(),
                 transferWithdrawCompletedPayload.getCurrency());
@@ -66,6 +71,36 @@ public class TransferEventListener {
             sagaEntity.setStatus(StatusEnum.COMPLETED);
 
             sagaRepository.save(sagaEntity);
-        }
+        } else if (EventType.TRANSFER_DEPOSIT_FAILED.equals(eventWrapper.getEventType())){
+            TransferDepositFailedPayload transferDepositFailedPayload = gson.fromJson(eventWrapper.getPayload(), TransferDepositFailedPayload.class);
+
+            SagaEntity sagaEntity = sagaRepository.findByTransferId(transferDepositFailedPayload.getTransferId());
+
+            sagaEntity.setStatus(StatusEnum.COMPENSATING);
+            sagaRepository.save(sagaEntity);
+
+            TransferCompensateRequestedPayload transferCompensateRequestedPayload = 
+                new TransferCompensateRequestedPayload(transferDepositFailedPayload.getTransferId(),
+                transferDepositFailedPayload.getFromAccountId(),
+                transferDepositFailedPayload.getAmount(),
+                transferDepositFailedPayload.getCurrency());
+
+            transferPublisher.publishMessage(RabbitMqConfig.EXCHANGE_NAME, "", transferCompensateRequestedPayload, EventType.TRANSFER_COMPENSATE_REQUESTED);
+       } else if (EventType.TRANSFER_COMPENSATED.equals(eventWrapper.getEventType())) {
+            TransferCompensateCompleted transferCompensateCompleted = gson.fromJson(eventWrapper.getPayload(), TransferCompensateCompleted.class);
+
+            SagaEntity sagaEntity = sagaRepository.findByTransferId(transferCompensateCompleted.getTransferId());
+
+            sagaEntity.setStatus(StatusEnum.COMPENSATED);
+            sagaRepository.save(sagaEntity);
+       
+       } else if (EventType.TRANSFER_COMPENSATE_FAILED.equals(eventWrapper.getEventType())) {
+            TransferCompensateFailed transferCompensateFailed = gson.fromJson(eventWrapper.getPayload(), TransferCompensateFailed.class);
+
+            SagaEntity sagaEntity = sagaRepository.findByTransferId(transferCompensateFailed.getTransferId());
+
+            sagaEntity.setStatus(StatusEnum.FAILED);
+            sagaRepository.save(sagaEntity);
+       }
     }
 }

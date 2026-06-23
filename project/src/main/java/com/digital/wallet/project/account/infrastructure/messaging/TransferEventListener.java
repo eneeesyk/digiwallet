@@ -14,6 +14,9 @@ import com.digital.wallet.project.config.RabbitMqFanoutExchangeConfig;
 import com.google.gson.Gson;
 
 import com.digital.wallet.project.constants.EventType;
+import com.digital.wallet.project.pojos.TransferCompensateCompleted;
+import com.digital.wallet.project.pojos.TransferCompensateFailed;
+import com.digital.wallet.project.pojos.TransferCompensateRequestedPayload;
 import com.digital.wallet.project.pojos.TransferDepositCompletedPayload;
 import com.digital.wallet.project.pojos.TransferDepositFailedPayload;
 import com.digital.wallet.project.pojos.TransferDepositRequestedPayload;
@@ -84,10 +87,32 @@ public class TransferEventListener {
                 eventPublisher.publishTransferEvent(RabbitMqFanoutExchangeConfig.FANOUT_EXCHANGE, "", transferDepositCompletedPayload, EventType.TRANSFER_DEPOSIT_COMPLETED);
             }catch (Exception e){
                 TransferDepositFailedPayload transferDepositFailedPayload = 
-                    new TransferDepositFailedPayload(transferDepositRequestedPayload.getTransferId(),
+                    new TransferDepositFailedPayload(transferDepositRequestedPayload.getTransferId(), 
+                    transferDepositRequestedPayload.getFromAccountId(), 
+                    transferDepositRequestedPayload.getAmount(),
+                    transferDepositRequestedPayload.getCurrency(),
                     e.getMessage());
 
               eventPublisher.publishTransferEvent(RabbitMqFanoutExchangeConfig.FANOUT_EXCHANGE, "", transferDepositFailedPayload, EventType.TRANSFER_DEPOSIT_FAILED);
+            }
+        } else if (EventType.TRANSFER_COMPENSATE_REQUESTED.equals(eventWrapper.getEventType())) {
+            TransferCompensateRequestedPayload transferCompensateRequestedPayload = gson.fromJson(eventWrapper.getPayload(), TransferCompensateRequestedPayload.class);
+
+            AccountId accountId = new AccountId(transferCompensateRequestedPayload.getAccountId());
+
+            Account account = accountService.loadAccount(accountId);
+
+            try {
+                account.deposit(new Money(transferCompensateRequestedPayload.getAmount(), transferCompensateRequestedPayload.getCurrency()));
+                accountService.registerEvents(account);
+
+                TransferCompensateCompleted transferCompensateCompleted = 
+                    new TransferCompensateCompleted(transferCompensateRequestedPayload.getTransferId());
+
+                 eventPublisher.publishTransferEvent(RabbitMqFanoutExchangeConfig.FANOUT_EXCHANGE, "", transferCompensateCompleted, EventType.TRANSFER_COMPENSATED);
+            } catch (Exception e){
+                TransferCompensateFailed transferCompensateFailed = new TransferCompensateFailed(transferCompensateRequestedPayload.getTransferId());
+                eventPublisher.publishTransferEvent(RabbitMqFanoutExchangeConfig.FANOUT_EXCHANGE, "", transferCompensateFailed, EventType.TRANSFER_COMPENSATE_FAILED);
             }
         }
     }

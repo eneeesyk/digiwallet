@@ -1,4 +1,4 @@
-package com.digital.wallet.project.pojos;
+package com.digiwallet.service.transfer.pojos;
 
 import java.math.BigDecimal;
 import java.util.UUID;
