@@ -6,7 +6,10 @@
       "type": "shell",
       "command": "docker compose up -d",
       "options": {
-        "cwd": "${workspaceFolder}"
+        "cwd": "${workspaceFolder}",
+        "env": {
+          "PATH": "/Applications/Docker.app/Contents/Resources/bin:${env:PATH}"
+        }
       },
       "problemMatcher": [],
       "presentation": {
@@ -19,7 +22,10 @@
       "type": "shell",
       "command": "docker compose down",
       "options": {
-        "cwd": "${workspaceFolder}"
+        "cwd": "${workspaceFolder}",
+        "env": {
+          "PATH": "/Applications/Docker.app/Contents/Resources/bin:${env:PATH}"
+        }
       },
       "problemMatcher": []
     }

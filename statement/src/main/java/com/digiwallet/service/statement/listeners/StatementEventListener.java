@@ -38,8 +38,13 @@ public class StatementEventListener {
     @RabbitListener(queues = RabbitMqConfig.QUEUE_NAME)
     public void recieveMessage(String message){
         EventWrapper eventWrapper = gson.fromJson(message, EventWrapper.class);
+        EventType eventType = eventWrapper.getEventType();
+        if (eventType == null) {
+            return;
+        }
+
         PayloadPojo payload = gson.fromJson(eventWrapper.getPayload(), PayloadPojo.class);
-        
+
         Long accountId = payload.getAccountId().getValue();
         Instant now = Instant.now();
 

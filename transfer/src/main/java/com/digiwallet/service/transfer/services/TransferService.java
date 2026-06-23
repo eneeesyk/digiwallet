@@ -12,18 +12,12 @@ import com.digiwallet.service.transfer.entities.SagaEntity;
 import com.digiwallet.service.transfer.pojos.TransferWithdrawRequestedPayload;
 import com.digiwallet.service.transfer.publishers.TransferPublisher;
 import com.digiwallet.service.transfer.repositories.SagaRepository;
-import com.digiwallet.service.transfer.wrappers.EventWrapper;
-
-import com.google.gson.Gson;
-
 
 @Service
 public class TransferService {
 
     private final SagaRepository sagaRepository;
     private final TransferPublisher transferPublisher;
-
-    private Gson gson = new Gson();
 
     public TransferService(SagaRepository sagaRepository, TransferPublisher transferPublisher){
         this.sagaRepository = sagaRepository;
@@ -51,8 +45,7 @@ public class TransferService {
         transferWithdrawRequestedPayload.setToAccountId(toAccountId);
         transferWithdrawRequestedPayload.setTransferId(transferId);
 
-        EventWrapper eventWrapper = new EventWrapper(EventType.TRANSFER_WITHDRAW_REQUESTED, gson.toJson(transferWithdrawRequestedPayload));
-        transferPublisher.publishMessage(RabbitMqConfig.EXCHANGE_NAME, "", eventWrapper);
+        transferPublisher.publishMessage(RabbitMqConfig.EXCHANGE_NAME, "", transferWithdrawRequestedPayload ,EventType.TRANSFER_WITHDRAW_REQUESTED);
 
         entity.setStatus(StatusEnum.WITHDRAW_REQUESTED);
         sagaRepository.save(entity);

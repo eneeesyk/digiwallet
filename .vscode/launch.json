@@ -21,12 +21,19 @@
       "request": "launch",
       "mainClass": "com.digiwallet.service.notificationservice.NotificationserviceApplication",
       "projectName": "notificationservice"
+    },
+    {
+      "type": "java",
+      "name": "transfer",
+      "request": "launch",
+      "mainClass": "com.digiwallet.service.transfer.TransferApplication",
+      "projectName": "transfer"
     }
   ],
   "compounds": [
     {
       "name": "All services",
-      "configurations": ["project (wallet)", "statement", "notificationservice"],
+      "configurations": ["project (wallet)", "statement", "notificationservice", "transfer"],
       "preLaunchTask": "start-infra",
       "stopAll": true
     }

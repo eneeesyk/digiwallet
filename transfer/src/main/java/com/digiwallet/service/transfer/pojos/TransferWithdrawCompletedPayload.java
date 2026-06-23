@@ -1,0 +1,54 @@
+package com.digiwallet.service.transfer.pojos;
+
+import java.math.BigDecimal;
+import java.util.UUID;
+
+public class TransferWithdrawCompletedPayload {
+
+    private UUID transferId;
+
+    private Long toAccountId;
+
+    private BigDecimal amount;
+
+    private String currency;
+
+    public TransferWithdrawCompletedPayload(UUID transferId, Long toAccountId, BigDecimal amount, String currency) {
+        this.transferId = transferId;
+        this.toAccountId = toAccountId;
+        this.amount = amount;
+        this.currency = currency;
+    }
+
+    public UUID getTransferId() {
+        return transferId;
+    }
+
+    public void setTransferId(UUID transferId) {
+        this.transferId = transferId;
+    }
+
+    public Long getToAccountId() {
+        return toAccountId;
+    }
+
+    public void setToAccountId(Long toAccountId) {
+        this.toAccountId = toAccountId;
+    }
+
+    public BigDecimal getAmount() {
+        return amount;
+    }
+
+    public void setAmount(BigDecimal amount) {
+        this.amount = amount;
+    }
+
+    public String getCurrency() {
+        return currency;
+    }
+
+    public void setCurrency(String currency) {
+        this.currency = currency;
+    }
+}

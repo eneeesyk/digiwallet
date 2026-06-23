@@ -14,6 +14,9 @@ import com.digital.wallet.project.config.RabbitMqFanoutExchangeConfig;
 import com.google.gson.Gson;
 
 import com.digital.wallet.project.constants.EventType;
+import com.digital.wallet.project.pojos.TransferDepositCompletedPayload;
+import com.digital.wallet.project.pojos.TransferDepositFailedPayload;
+import com.digital.wallet.project.pojos.TransferDepositRequestedPayload;
 import com.digital.wallet.project.pojos.TransferWithdrawCompletedPayload;
 import com.digital.wallet.project.pojos.TransferWithdrawFailedPayload;
 import com.digital.wallet.project.pojos.TransferWithdrawRequestedPayload;
@@ -62,6 +65,30 @@ public class TransferEventListener {
             }
 
                         
+        } else if(EventType.TRANSFER_DEPOSIT_REQUESTED.equals(eventWrapper.getEventType())){
+            TransferDepositRequestedPayload transferDepositRequestedPayload = gson.fromJson(eventWrapper.getPayload(), TransferDepositRequestedPayload.class);
+            AccountId toAccountId = new AccountId(transferDepositRequestedPayload.getToAccountId());
+        
+            Account account = accountService.loadAccount(toAccountId);
+
+            try {
+                account.deposit(new Money(transferDepositRequestedPayload.getAmount(), transferDepositRequestedPayload.getCurrency()));
+                accountService.registerEvents(account);
+
+                TransferDepositCompletedPayload transferDepositCompletedPayload =
+                    new TransferDepositCompletedPayload(transferDepositRequestedPayload.getTransferId(),
+                        transferDepositRequestedPayload.getFromAccountId(),
+                        transferDepositRequestedPayload.getAmount(),
+                        transferDepositRequestedPayload.getCurrency(),
+                        transferDepositRequestedPayload.getToAccountId());
+                eventPublisher.publishTransferEvent(RabbitMqFanoutExchangeConfig.FANOUT_EXCHANGE, "", transferDepositCompletedPayload, EventType.TRANSFER_DEPOSIT_COMPLETED);
+            }catch (Exception e){
+                TransferDepositFailedPayload transferDepositFailedPayload = 
+                    new TransferDepositFailedPayload(transferDepositRequestedPayload.getTransferId(),
+                    e.getMessage());
+
+              eventPublisher.publishTransferEvent(RabbitMqFanoutExchangeConfig.FANOUT_EXCHANGE, "", transferDepositFailedPayload, EventType.TRANSFER_DEPOSIT_FAILED);
+            }
         }
     }
     
